@@ -19,7 +19,7 @@ jobs:
 
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            sudo ./aws/install
+            sudo ./aws/install --update     # ✅ <--- FIXED HERE
             aws --version
 
             KUBECTL_VERSION="v1.30.0"
@@ -31,7 +31,7 @@ jobs:
       - run:
           name: Authenticate Docker to ECR
           command: |
-            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 450460062983.dkr.ecr.us-east-1.amazonaws.com
 
       - run:
           name: Build Docker image
@@ -39,11 +39,11 @@ jobs:
 
       - run:
           name: Tag Docker image
-          command: docker tag flask-app:latest $ECR_URL/flask-app:latest
+          command: docker tag flask-app:latest 450460062983.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
 
       - run:
           name: Push Docker image to ECR
-          command: docker push $ECR_URL/flask-app:latest
+          command: docker push 450460062983.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
 
       - run:
           name: Configure kubectl
@@ -57,3 +57,4 @@ workflows:
   deploy-workflow:
     jobs:
       - build-and-deploy
+
